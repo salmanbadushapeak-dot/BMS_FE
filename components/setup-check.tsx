@@ -4,8 +4,9 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { isSupabaseConfigured } from "@/lib/supabase"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
+import { useAuth } from "@/components/auth/auth-provider"
 
 interface SetupCheckProps {
   children: React.ReactNode
@@ -16,6 +17,7 @@ export function SetupCheck({ children }: SetupCheckProps) {
   const [isChecking, setIsChecking] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
+  const { user } = useAuth()
 
   useEffect(() => {
     const checkConfiguration = async () => {
@@ -62,11 +64,16 @@ export function SetupCheck({ children }: SetupCheckProps) {
     return <>{children}</>
   }
 
-  // If configured, show app with sidebar
+  // If user is not logged in, don't show sidebar (login form will be shown by ProtectedRoute)
+  if (!user) {
+    return <>{children}</>
+  }
+
+  // If configured and user is logged in, show app with sidebar
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="flex-1 overflow-auto">{children}</main>
+      <SidebarInset className="overflow-auto">{children}</SidebarInset>
     </SidebarProvider>
   )
 }

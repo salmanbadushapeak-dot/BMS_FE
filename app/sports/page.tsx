@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SafeSidebarTrigger } from "@/components/safe-sidebar-trigger"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
@@ -34,7 +34,8 @@ export default function SportsPage() {
       members: 12,
       status: "Active",
       achievements: ["Inter-school Championship 2024", "District Level Winner"],
-      image: "/images/basketball-court.jpg",
+      image: "https://images.unsplash.com/photo-1519869325934-21c5bf0a0c4a?w=800&h=600&fit=crop",
+      bgColor: "from-orange-500 to-red-600",
       description: "Our premier basketball team competing at state level",
     },
     {
@@ -46,7 +47,8 @@ export default function SportsPage() {
       members: 15,
       status: "Active",
       achievements: ["Regional Tournament Runner-up"],
-      image: "/images/football-field.jpg",
+      image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=600&fit=crop",
+      bgColor: "from-green-500 to-emerald-600",
       description: "Competitive football team with excellent teamwork",
     },
     {
@@ -58,7 +60,8 @@ export default function SportsPage() {
       members: 11,
       status: "Active",
       achievements: ["State Level Qualifier"],
-      image: "/images/cricket-field.jpg",
+      image: "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&h=600&fit=crop",
+      bgColor: "from-blue-500 to-cyan-600",
       description: "Traditional cricket team with strong batting lineup",
     },
     {
@@ -70,7 +73,8 @@ export default function SportsPage() {
       members: 8,
       status: "Active",
       achievements: ["Regional Swimming Championship"],
-      image: "/images/swimming-pool.jpg",
+      image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&h=600&fit=crop",
+      bgColor: "from-cyan-500 to-blue-600",
       description: "Elite swimming team with record-breaking performances",
     },
   ]
@@ -157,16 +161,18 @@ export default function SportsPage() {
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-green-600 via-blue-600 to-purple-700 text-white shadow-2xl">
         <div className="absolute inset-0">
           <Image
-            src="/images/basketball-court.jpg"
+            src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&h=1080&fit=crop"
             alt="Sports Complex"
             fill
-            className="object-cover opacity-25"
+            sizes="100vw"
+            className="object-cover opacity-30"
             priority
+            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-r from-green-900/70 via-blue-900/50 to-purple-900/70" />
         </div>
         <div className="relative z-10 flex items-center gap-6 p-8 md:p-12">
-          <SidebarTrigger className="text-white hover:bg-white/20 rounded-lg p-2" />
+          <SafeSidebarTrigger className="text-white hover:bg-white/20 rounded-lg p-2" />
           <div className="flex-1 space-y-4">
             <div className="space-y-2">
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-green-100 bg-clip-text text-transparent">
@@ -329,12 +335,15 @@ export default function SportsPage() {
                     key={team.id}
                     className="group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
                   >
-                    <div className="relative h-56">
+                    <div className={`relative h-56 bg-gradient-to-br ${team.bgColor || "from-blue-400 to-purple-500"} overflow-hidden`}>
+                      <div className={`absolute inset-0 bg-gradient-to-br ${team.bgColor || "from-blue-400 to-purple-500"} opacity-30`} />
                       <Image
-                        src={team.image || "/placeholder.svg"}
+                        src={team.image}
                         alt={team.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 z-10"
+                        unoptimized
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute top-4 right-4">

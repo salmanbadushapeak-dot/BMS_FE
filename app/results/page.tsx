@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SafeSidebarTrigger } from "@/components/safe-sidebar-trigger"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -122,7 +122,7 @@ export default function ResultsPage() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center gap-4">
-        <SidebarTrigger />
+        <SafeSidebarTrigger />
         <div>
           <h1 className="text-3xl font-bold">Results Management</h1>
           <p className="text-muted-foreground">Manage exam results and academic performance</p>

@@ -1,4 +1,18 @@
-import { supabase } from "./supabase"
+import { createSupabaseBrowserClient } from "./supabase/client"
+
+// Get the supabase client
+const getSupabase = () => {
+  const client = createSupabaseBrowserClient()
+  // Check if Supabase is properly configured
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase is not configured. Please set up your environment variables in .env.local")
+  }
+  
+  return client
+}
 
 export type UserRole = "admin" | "teacher" | "student"
 
@@ -18,6 +32,7 @@ export const authService = {
   // Sign in
   async signIn(email: string, password: string) {
     try {
+      const supabase = getSupabase()
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -41,6 +56,7 @@ export const authService = {
   // Sign up
   async signUp(email: string, password: string, role: UserRole, profileData: any) {
     try {
+      const supabase = getSupabase()
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -63,6 +79,7 @@ export const authService = {
   // Sign out
   async signOut() {
     try {
+      const supabase = getSupabase()
       const { error } = await supabase.auth.signOut()
       if (error) throw error
     } catch (error) {
@@ -74,6 +91,7 @@ export const authService = {
   // Get current user
   async getCurrentUser() {
     try {
+      const supabase = getSupabase()
       const {
         data: { session },
         error: sessionError,
@@ -106,6 +124,7 @@ export const authService = {
   // Create user profile
   async createUserProfile(userId: string, role: UserRole, profileData: any) {
     try {
+      const supabase = getSupabase()
       const { error } = await supabase.from("user_profiles").insert([
         {
           id: userId,
@@ -127,6 +146,7 @@ export const authService = {
   // Get user profile
   async getUserProfile(userId: string) {
     try {
+      const supabase = getSupabase()
       const { data, error } = await supabase.from("user_profiles").select("*").eq("id", userId).single()
 
       if (error) {

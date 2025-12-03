@@ -15,6 +15,7 @@ import {
   UserCog,
   LogOut,
   Plus,
+  Shield,
 } from "lucide-react"
 import {
   Sidebar,
@@ -107,6 +108,12 @@ const settingsItems = [
     roles: ["admin", "teacher", "student"],
   },
   {
+    title: "Roles & Permissions",
+    href: "/roles",
+    icon: Shield,
+    roles: ["admin"],
+  },
+  {
     title: "Settings",
     href: "/settings",
     icon: Settings,
@@ -117,7 +124,7 @@ const settingsItems = [
 export function AppSidebar() {
   const pathname = usePathname()
   const { toggleSidebar } = useSidebar()
-  const { signOut } = useAuth()
+  const { signOut, user } = useAuth()
   const router = useRouter()
 
   const handleLogout = async () => {
@@ -139,8 +146,11 @@ export function AppSidebar() {
     }
   }
 
-  const filteredNavItems = navItems.filter((item) => item.roles.includes(currentUser.role))
-  const filteredSettingsItems = settingsItems.filter((item) => item.roles.includes(currentUser.role))
+  // Use actual user role from context, fallback to dummy data
+  const effectiveUserRole = user?.role || currentUser.role
+  
+  const filteredNavItems = navItems.filter((item) => item.roles.includes(effectiveUserRole))
+  const filteredSettingsItems = settingsItems.filter((item) => item.roles.includes(effectiveUserRole))
 
   return (
     <Sidebar>

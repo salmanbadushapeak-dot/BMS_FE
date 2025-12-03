@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SafeSidebarTrigger } from "@/components/safe-sidebar-trigger"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
@@ -69,7 +69,7 @@ export default function ReportsPage() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center gap-4">
-        <SidebarTrigger />
+        <SafeSidebarTrigger />
         <div>
           <h1 className="text-3xl font-bold">Reports & Analytics</h1>
           <p className="text-muted-foreground">Comprehensive reports and data analytics</p>

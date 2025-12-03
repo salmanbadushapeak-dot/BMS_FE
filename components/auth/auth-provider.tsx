@@ -4,7 +4,8 @@ import type React from "react"
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { authService, type AuthUser, type UserRole } from "@/lib/auth"
-import { supabase } from "@/lib/supabase"
+import { createSupabaseBrowserClient } from "@/lib/supabase/client"
+import { getRoleFromEmail, validateCredentials } from "@/lib/credentials"
 
 interface AuthContextType {
   user: AuthUser | null
@@ -25,25 +26,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check current user on mount
     checkUser()
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        const profile = await authService.getUserProfile(session.user.id)
-        setUser({
-          id: session.user.id,
-          email: session.user.email!,
-          role: profile?.role || "admin",
-          profile: profile,
-        })
-      } else if (event === "SIGNED_OUT") {
-        setUser(null)
-      }
-      setLoading(false)
-    })
+    // Listen for auth changes only if Supabase is configured
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-    return () => subscription.unsubscribe()
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createSupabaseBrowserClient()
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          try {
+            const profile = await authService.getUserProfile(session.user.id)
+            setUser({
+              id: session.user.id,
+              email: session.user.email!,
+              role: profile?.role || "admin",
+              profile: profile,
+            })
+          } catch (error) {
+            console.error("Error getting user profile:", error)
+          }
+        } else if (event === "SIGNED_OUT") {
+          setUser(null)
+        }
+        setLoading(false)
+      })
+
+      return () => subscription.unsubscribe()
+    } else {
+      // If Supabase is not configured, just set loading to false
+      setLoading(false)
+    }
   }, [])
 
   const checkUser = async () => {
@@ -95,6 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
+      // First try real Supabase authentication
       const result = await authService.signIn(email, password)
       setExplicitLogout(false) // Reset logout flag on successful login
       setUser({
@@ -104,18 +119,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile: result.profile,
       })
     } catch (error) {
-      // For demo purposes, allow any login
-      console.log("Demo login for:", email)
-      setExplicitLogout(false) // Reset logout flag on successful login
-      setUser({
-        id: "demo-user-id",
-        email: email,
-        role: email.includes("admin") ? "admin" : email.includes("teacher") ? "teacher" : "student",
-        profile: {
-          first_name: "Demo",
-          last_name: email.includes("admin") ? "Admin" : email.includes("teacher") ? "Teacher" : "Student",
-        },
-      })
+      // For demo purposes, check if credentials match predefined users
+      const role = getRoleFromEmail(email)
+      
+      if (role && validateCredentials(email, password)) {
+        // Valid predefined credentials
+        console.log("Demo login for:", email, "as", role)
+        setExplicitLogout(false) // Reset logout flag on successful login
+        setUser({
+          id: `demo-${role}-${Date.now()}`,
+          email: email,
+          role: role,
+          profile: {
+            first_name: role === "admin" ? "Admin" : role === "teacher" ? "Teacher" : "Student",
+            last_name: "User",
+            role: role,
+          },
+        })
+      } else {
+        // Invalid credentials - throw error
+        throw new Error("Invalid email or password. Please use the provided demo credentials.")
+      }
     }
   }
 

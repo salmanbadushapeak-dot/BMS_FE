@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SafeSidebarTrigger } from "@/components/safe-sidebar-trigger"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -331,7 +331,7 @@ export default function AttendancePage() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center gap-4">
-        <SidebarTrigger />
+        <SafeSidebarTrigger />
         <div>
           <h1 className="text-3xl font-bold">Attendance Management</h1>
           <p className="text-muted-foreground">Track and manage student attendance</p>
