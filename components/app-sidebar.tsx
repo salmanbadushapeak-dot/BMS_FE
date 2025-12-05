@@ -98,6 +98,12 @@ const navItems = [
     icon: Search,
     roles: ["admin"],
   },
+  {
+    title: "User Management",
+    href: "/user-management",
+    icon: UserCog,
+    roles: ["admin"],
+  },
 ]
 
 const settingsItems = [
